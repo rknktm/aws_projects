@@ -1,4 +1,5 @@
 AWSTemplateFormatVersion: 2010-09-09
+
 Description: |
   CloudFormation Template for Roman Numerals Converter Application. 
   This template creates Python Flask Web Application on Amazon Linux 2 
@@ -6,15 +7,14 @@ Description: |
   http connections on port 80 and SSH connection on port 22. 
   Roman Numerals Converter Application is downloaded from Github repository, 
   then installed on Flask.
-​
+
 Parameters:
   KeyName:
     Description: Enter the name of your Key Pair for SSH connections.
     Type: AWS::EC2::KeyPair::KeyName
-​
-​
+
 Resources:
-  WebServerSecurityGroup:
+  SecurityGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:
       GroupDescription: "Enable HTTP for flask web server and SSH port to secure reach to my EC2" # Required
@@ -35,7 +35,7 @@ Resources:
       InstanceType: t2.micro
       KeyName: !Ref KeyName
       SecurityGroupIds:
-        - !Ref WebServersecurityGroup
+        - !Ref SecurityGroup
       Tags:
         - Key: Name
           Value: !Sub Web Server of ${AWS::StackName}
@@ -45,14 +45,18 @@ Resources:
           yum install python3 -y
           pip3 install flask
           cd /home/ec2-user
-          wget -P templates https://raw.githubusercontent.com/armando-cla/myproject/main/aws/projects/Project-001-Roman-Numerals-Convertor/templates/index.html
-          wget -P templates https://raw.githubusercontent.com/armando-cla/myproject/main/aws/projects/Project-001-Roman-Numerals-Convertor/templates/result.html
-          wget https://raw.githubusercontent.com/armando-cla/myproject/main/aws/projects/Project-001-Roman-Numerals-Convertor/app.py
+          wget -P templates https://raw.githubusercontent.com/rknktm/aws_projects/main/Project-001-Roman-Numerals-Converter/templates/index.html
+          wget -P templates https://raw.githubusercontent.com/rknktm/aws_projects/main/Project-001-Roman-Numerals-Converter/templates/result.html
+          wget https://raw.githubusercontent.com/rknktm/aws_projects/main/Project-001-Roman-Numerals-Converter/app.py
           python3 app.py
- 
 Outputs:
   WebSiteURL:
     Value: !Sub
-      - http://${PublicAddress}
-      - PublicAddress: !GetAtt WebServerHost.PublicDnsName
+      - http://${PublicDns}
+      - PublicDns: !GetAtt WebServerHost.PublicDnsName
+    Description: Roman Numerals Converter Application URL
+  WebSiteURL2:
+    Value: !Sub
+      - http://${PublicIp}
+      - PublicIp: !GetAtt WebServerHost.PublicIp
     Description: Roman Numerals Converter Application URL
